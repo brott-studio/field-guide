@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lulu's Field Guide</title>
+<meta name="description" content="Tools and fun things made by Lulu Sun." />
+<style>
+@font-face { font-family: 'Jersey'; src: url('Jersey10-Regular.ttf'); }
+@font-face { font-family: 'Silk'; src: url('Silkscreen-Regular.ttf'); }
+@font-face { font-family: 'Tinos'; src: url('Tinos-Regular.woff2'); }
+@font-face { font-family: 'Tinos'; font-style: italic; src: url('Tinos-Italic.woff2'); }
+:root { --paper: #f4e9cf; --paper2: #ead9b4; --line: #c9b48a; --ink: #4a3b2a; --green: #2f8f6f; --green2: #1f6b52; --red: #c8463b; --cover: #6b4a2e; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { padding: 20px 0 50px; background: #2c3b33 radial-gradient(circle at 50% 40%, #3b5245, #1e2a24); font-family: 'Tinos', serif; color: var(--ink); display: grid; place-items: center; min-height: 100vh; }
+.wrap { position: relative; width: min(1120px, 96vw); }
+.title { font-family: 'Jersey', serif; color: #f4e9cf; font-size: 44px; text-align: center; letter-spacing: 1px; margin: 0 0 30px; text-shadow: 0 3px 0 #10180f; }
+.title small { display: block; font-family: 'Silk', serif; font-size: 12px; color: #b9d8c4; letter-spacing: 2px; }
+.book { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: var(--cover); padding: 14px 14px 18px; border-radius: 10px; box-shadow: 0 18px 0 -6px #3e2a19, 0 30px 50px rgba(0,0,0,.45); }
+.page { background: var(--paper); height: 640px; padding: 28px 30px; position: relative; }
+.page.left { border-radius: 6px 2px 2px 6px; box-shadow: inset -18px 0 24px -16px rgba(80,50,20,.35); }
+.page.right { border-radius: 2px 6px 6px 2px; box-shadow: inset 18px 0 24px -16px rgba(80,50,20,.35); }
+.page::after { content: ''; position: absolute; inset: 10px; border: 2px solid var(--line); border-radius: 4px; pointer-events: none; opacity: .6; }
+.ribbon { position: absolute; left: calc(50% - 17px); top: -6px; width: 34px; height: calc(100% + 34px); background: linear-gradient(90deg, #a8342b 0 3px, #c8463b 3px calc(100% - 3px), #a8342b calc(100% - 3px)); clip-path: polygon(0 0,100% 0,100% 100%,50% calc(100% - 20px),0 100%); z-index: 3; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.ribbon::after { content: ''; position: absolute; left: 6px; right: 6px; top: 0; bottom: 30px; border-left: 2px dashed rgba(255,220,200,.45); border-right: 2px dashed rgba(255,220,200,.45); }
+.tabs { position: absolute; right: -46px; top: 60px; display: flex; flex-direction: column; gap: 8px; }
+.tabs button { width: 58px; height: 52px; border: 0; border-radius: 0 10px 10px 0; background: var(--green); color: #f4e9cf; font-family: 'Silk', serif; font-size: 9px; cursor: pointer; padding-left: 12px; box-shadow: inset 0 -4px 0 rgba(0,0,0,.2); }
+.tabs button.on { background: var(--green2); width: 72px; box-shadow: inset 0 -4px 0 rgba(0,0,0,.2), 0 0 0 3px #f4e9cf; }
+.tabs canvas { display: block; margin: 0 auto 3px; }
+h2 { font-family: 'Jersey', serif; font-weight: normal; font-size: 30px; margin: 0; color: var(--green2); }
+.sub { font-family: 'Silk', serif; font-size: 10px; letter-spacing: 1px; color: #8a7350; margin: 2px 0 18px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; width: 82%; margin: 30px auto 0; }
+.slot { position: relative; aspect-ratio: 1; background: var(--paper2); border: 3px solid var(--line); border-radius: 8px; display: grid; place-items: center; cursor: pointer; transition: transform .12s; }
+.slot:hover { transform: translateY(-3px); }
+.slot.on { border-color: var(--green); box-shadow: 0 0 0 3px #f4e9cf, 0 0 0 6px var(--green); }
+.slot .no { position: absolute; left: 6px; top: 4px; font-family: 'Jersey', serif; font-size: 16px; color: #6e5a3c; }
+.slot.empty { cursor: default; opacity: .75; }
+.slot.off { opacity: .3; filter: grayscale(1); pointer-events: none; }
+.tabs button:hover { filter: brightness(1.1); }
+.slot.empty:hover { transform: none; }
+.slot .q { font-family: 'Jersey', serif; font-size: 34px; color: #9a845e; }
+.tip { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(-4px); width: 190px; background: var(--ink); color: #f4e9cf; border-radius: 6px; padding: 8px 10px; font-size: 14px; line-height: 1.3; opacity: 0; pointer-events: none; transition: .15s; z-index: 5; text-align: left; }
+.tip b { display: block; font-family: 'Jersey', serif; font-weight: normal; font-size: 19px; color: #ffd866; }
+.tip::after { content: ''; position: absolute; bottom: 100%; left: 50%; margin-left: -6px; border: 6px solid transparent; border-bottom-color: var(--ink); }
+.slot:nth-child(3n+1) .tip { left: -6px; transform: translateY(-4px); } .slot:nth-child(3n+1) .tip::after { left: 40px; }
+.slot:nth-child(3n) .tip { left: auto; right: -6px; transform: translateY(-4px); } .slot:nth-child(3n) .tip::after { left: auto; right: 34px; }
+.slot:nth-child(3n+1):hover .tip, .slot:nth-child(3n+1).force .tip, .slot:nth-child(3n):hover .tip, .slot:nth-child(3n).force .tip { transform: none; }
+.slot:hover .tip, .slot.force .tip { opacity: 1; transform: translateX(-50%); }
+.count { position: absolute; left: 30px; right: 30px; bottom: 20px; margin: 0; font-family: 'Silk', serif; font-size: 11px; color: #6e5a3c; display: flex; justify-content: space-between; }
+.entry-top { display: flex; gap: 14px; align-items: center; }
+.entry-top .badge { width: 70px; height: 70px; background: var(--paper2); border: 3px solid var(--line); border-radius: 8px; display: grid; place-items: center; flex: none; }
+.entry-no { font-family: 'Silk', serif; font-size: 10px; color: #9a845e; }
+.name { font-family: 'Jersey', serif; font-size: 34px; color: var(--green2); text-decoration: none; display: inline-flex; align-items: center; gap: 8px; line-height: 1; }
+.name:hover { color: var(--red); }
+.name .go { font-family: 'Silk', serif; font-size: 9px; background: var(--green); color: #f4e9cf; padding: 4px 6px; border-radius: 4px; }
+.types { display: flex; gap: 6px; margin-top: 6px; }
+.type { font-family: 'Silk', serif; font-size: 9px; padding: 3px 7px; border-radius: 10px; color: #fff; }
+.shot { display: block; margin: 16px 0 12px; border: 3px solid var(--line); border-radius: 8px; overflow: hidden; background: #ddd; aspect-ratio: 16 / 9; }
+.shot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.desc { font-size: 16px; line-height: 1.45; margin: 0 0 12px; }
+.stats { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; border-top: 2px dashed var(--line); padding-top: 10px; }
+.stats dt { font-family: 'Silk', serif; font-size: 10px; color: #6e5a3c; padding-top: 3px; }
+.stats dd { margin: 0; }
+.open { position: absolute; right: 30px; bottom: 26px; font-family: 'Silk', serif; font-size: 11px; background: var(--green); color: #f4e9cf; text-decoration: none; padding: 10px 14px; border-radius: 6px; box-shadow: inset 0 -4px 0 rgba(0,0,0,.2); }
+.back { position: absolute; left: 0; top: -2px; font-family: 'Silk', serif; font-size: 10px; color: #b9d8c4; text-decoration: none; }
+.pnum { position: absolute; bottom: 20px; font-family: 'Silk', serif; font-size: 10px; color: #8a7350; }
+.left .pnum { left: auto; right: 30px; } .right .pnum { left: 30px; }
+.page.right { padding-bottom: 70px; }
+.right .pnum { left: 40px !important; } .left .pnum { right: 40px !important; }
+
+
+.unused-rings { position: absolute; left: calc(50% - 22px); top: 26px; bottom: 26px; width: 44px; display: flex; flex-direction: column; justify-content: space-between; z-index: 4; }
+.rings i { display: block; height: 12px; border-radius: 6px; background: linear-gradient(#8b8f96, #3d4148 60%, #6d7178); box-shadow: 0 2px 0 rgba(0,0,0,.35); }
+.book { padding: 14px 14px 18px; column-gap: 0; background: #b98c5a; }
+.page.left::after, .page.right::after { border-style: dashed; }
+.heading { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2px; }
+.heading h2 { letter-spacing: 3px; color: #a2794a; font-size: 34px; }
+.heading .fl { font-family: 'Jersey', serif; color: #c9a873; font-size: 22px; }
+.sub { text-align: center; }
+.lockslot { display: block; image-rendering: pixelated; opacity: .7; }
+.note { position: relative; background: #fffaf0; padding: 16px 16px 12px; margin: 14px 8px 14px 18px; transform: rotate(1.5deg); box-shadow: 2px 4px 0 rgba(80,50,20,.18); }
+.note::before { content: ''; position: absolute; top: -10px; left: 50%; width: 70px; height: 20px; margin-left: -35px; background: rgba(214,196,160,.9); transform: rotate(-3deg); box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+.note .stats { border: 0; padding: 0; }
+.note .stats dd { color: #c8463b; font-family: 'Silk', serif; font-size: 11px; padding-top: 2px; }
+.dialog { background: #fbf3df; border: 3px solid #b99a6a; border-radius: 6px; box-shadow: inset 0 0 0 3px #fbf3df, inset 0 0 0 5px #d8c39a; padding: 14px 16px 12px; position: relative; }
+.dialog .dn { font-family: 'Silk', serif; font-size: 11px; color: #4a3b2a; margin-bottom: 6px; }
+.dialog p { margin: 0; font-size: 16px; line-height: 1.5; }
+.dialog { min-height: 150px; }
+.page { height: 600px; }
+.dialog .more { position: absolute; right: 10px; bottom: 6px; font-family: 'Silk', serif; font-size: 9px; color: #a08a62; animation: bob 1s steps(2) infinite; }
+@keyframes bob { 50% { transform: translateY(2px); } }
+.entry-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
+.entry-split .shot { margin: 14px 0 0; aspect-ratio: 4 / 3; }
+.date { position: absolute; left: 50%; top: -30px; transform: translateX(-50%); z-index: 6; background: #fff3dc; border: 3px solid #b5463b; border-radius: 6px; padding: 2px 14px; font-family: 'Jersey', serif; font-size: 22px; color: #b5463b; box-shadow: 0 3px 0 #7c2c24; white-space: nowrap; }
+
+.spine { position: absolute; left: calc(50% - 46px); top: -12px; bottom: -28px; width: 92px; z-index: -1; pointer-events: none;
+  background: linear-gradient(90deg, #3e2a19 0, #5a3d24 30%, #6b4a2e 50%, #5a3d24 70%, #3e2a19 100%); border-radius: 46px / 14px; }
+.spine .cap { position: absolute; left: 14px; right: 14px; top: 3px; height: 7px; border-radius: 50% 50% 2px 2px / 100% 100% 2px 2px;
+  background: repeating-linear-gradient(90deg, #c8463b 0 4px, #f4e9cf 4px 8px); }
+.spine .cap.bottom { top: auto; bottom: 3px; border-radius: 2px 2px 50% 50% / 2px 2px 100% 100%; }
+.gutter { position: absolute; left: calc(50% - 70px); width: 140px; top: 14px; bottom: 18px; z-index: 3; pointer-events: none;
+  background: linear-gradient(90deg, rgba(80,50,20,0) 0, rgba(80,50,20,.22) 38%, rgba(60,35,15,.42) 50%, rgba(80,50,20,.22) 62%, rgba(80,50,20,0) 100%); }
+.page { position: relative; z-index: 2; }
+.ribbon { top: 14px !important; z-index: 4 !important; }
+.shot { background: #1f2a44; }
+.shot.noimg { display: grid; place-items: center; background: #ead9b4; }
+
+@media (max-width: 820px) {
+  body { padding: 16px 0 50px; place-items: start center; }
+  .wrap { width: 94vw; }
+  .back { position: static; display: block; margin-bottom: 10px; }
+  .book { grid-template-columns: 1fr; margin-top: 52px !important; padding: 10px; }
+  .spine, .gutter, .ribbon { display: none; }
+  .page { height: auto; min-height: 0; padding: 22px 18px 50px; }
+  .page.left, .page.right { border-radius: 6px; box-shadow: none; }
+  .page.left { margin-bottom: 10px; }
+  .grid { width: 100%; margin-top: 16px; }
+  .tabs { position: absolute; top: -46px; right: 10px; left: auto; flex-direction: row; }
+  .tabs button, .tabs button.on { width: auto; height: 46px; border-radius: 10px 10px 0 0; padding: 4px 10px 0; }
+  .tabs button.on { box-shadow: inset 0 -4px 0 rgba(0,0,0,.2); }
+  .entry-split { grid-template-columns: 1fr; }
+  .note { margin: 10px 4px 4px; }
+  .count { bottom: 16px; }
+  .tip { display: none; }
+}
+.slot:hover, .slot.force { z-index: 6; }
+@media (max-width: 820px) { .tabs button { font-size: 10px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="https://lulu-sun.github.io/">◀ back to Lulu's site</a>
+  <div class="book" style="margin-top:34px">
+    <div class="spine"><span class="cap"></span><span class="cap bottom"></span></div><div class="gutter"></div><div class="ribbon"></div>
+    <section class="page left">
+      <div class="heading"><span class="fl">~❦</span><h2>INDEX</h2><span class="fl">❦~</span></div>
+      
+      <div class="grid" id="grid"></div>
+      <div class="count"><span id="found"></span></div>
+      <span class="pnum">PAGE 1</span>
+    </section>
+    <section class="page right" id="entry"></section>
+    <nav class="tabs" id="tabs"></nav>
+  </div>
+</div>
+<script>
+const PAL = { k:'#2b2b33', w:'#fffaf0', O:'#f2b46b', o:'#c9713b', B:'#a9cdf2', b:'#5b8fd6', y:'#ffd866', G:'#9ad18a', g:'#4f8a5e', p:'#e58fb0', P:'#f7b6c8', t:'#8a4a22', v:'#8e6cc4' };
+const ICONS = {
+  lilock: ['...kkkkkk...', '..kk....kk..', '..k......k..', '..k......k..', 'kkkkkkkkkkkk', 'kyyyyyyyyyyk', 'kyyyykkyyyyk', 'kyyyykkyyyyk', 'kyyyyykyyyyk', 'kyyyyyyyyyyk', 'kkkkkkkkkkkk'],
+  yarn: ['....kkkk....', '..kkppppkk..', '.kpPpppPppk.', '.kppPppPppk.', 'kpppPpPpppk.', 'kppppPppppk.', 'kpppPpPpppk.', '.kpPpppPppk.', '.kppppppppk.', '..kkppppkk.k', '....kkkk.kk.'],
+  lock: ['............','....kkkk....','...k....k...','...k....k...','..kkkkkkkk..','..kOOOOOOk..','..kOOkkOOk..','..kOOOkOOk..','..kOOOOOOk..','..kkkkkkkk..','............','............'],
+  panel: ['kkkkkkkkkkkk','kOOOOOOOOOOk','kOwwwOOwwwOk','kOwOwOOwOwOk','kOwOwOOwOwOk','kOwwwOOwwwOk','kOOOOOOOOOOk','kOwwwOOwwwOk','kOwOwOOwOwOk','kOwwwOOwwwOk','kOOOOOOOOOOk','kkkkkkkkkkkk'],
+  camera: ['............','....kkkk....','.kkkkyykkkk.','kBBBBBBBBBBk','kBBBkkkkBBBk','kBBkwwwwkBBk','kBBkwbbwkBBk','kBBkwbbwkBBk','kBBkwwwwkBBk','kBBBkkkkBBBk','kBBBBBBBBBBk','.kkkkkkkkkk.'],
+  dodo: ['...kkkk.....','..kBBBBk....','.kBkBBBBk...','.kBBBBBBkk..','kyyyBBBBBk..','kyyykBBBBBk.','kkkk.kBBBBBk','.....kBBBBBk','.....kBBBBk.','......kkkk..','......k..k..','.....kk.kk..'],
+  tool: ['........kk..','.......kGGk.','......kGGk..','.....kGGk...','....kGGk....','...kttk.....','..kttk......','.kttk.......','kttk........','kkk.........','............','............'],
+  star: ['.....kk.....','....kyyk....','....kyyk....','kkkkyyyykkkk','kyyyyyyyyyyk','.kyyyyyyyyk.','..kyyyyyyk..','..kyyyyyyk..','.kyyykkyyyk.','.kyyk..kyyk.','kkkk....kkkk','............'],
+  book: ['kkkkkkkkkkk.','kPPPPPPPPPkk','kPwwwwwwwPkk','kPPPPPPPPPkk','kPwwwwwPPPkk','kPPPPPPPPPkk','kPPPPPPPPPkk','kPPPPPPPPPkk','kPPPPPPPPPkk','kkkkkkkkkkkk','.kwwwwwwwwwk','..kkkkkkkkkk']
+};
+function sprite(name, scale) {
+  const rows = ICONS[name], c = document.createElement('canvas');
+  c.width = 12 * scale; c.height = rows.length * scale; c.style.imageRendering = 'pixelated';
+  const x = c.getContext('2d');
+  rows.forEach((r, j) => [...r].forEach((ch, i) => { if (PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(i * scale, j * scale, scale, scale); } }));
+  return c;
+}
+const TYPES = { Home: '#c9713b', Tool: '#2f8f6f', Creative: '#d06a8f', Game: '#5b8fd6', Writing: '#8e6cc4' };
+const entries = [
+  { no: '001', name: 'Wall Panel Preview', icon: 'panel', types: ['Home', 'Tool'], tab: 'tools', short: 'Try wall paneling on a photo of your own wall.', img: 'wall.png', pos: 'center 75%', url: 'https://studio.brotatotes.com/wall-panel-preview/',
+    desc: 'Upload a photo of your wall, outline the space, and play with panel rows, frames and spacing with live measurements. You can paint out furniture so the panels sit behind it.', made: 'October 2026', with: 'AI pair programming', where: 'Phone or computer' },
+  { no: '002', name: 'Little Days', icon: 'camera', types: ['Creative', 'Writing'], tab: 'fun', short: 'A cozy photo journal theme in soft fog colours.', img: 'blog.jpg', url: 'https://studio.brotatotes.com/little-days-demo/',
+    desc: 'A quiet photo journal with misty colours, a calendar, tags and a sparkle cursor. My real one runs privately on my own computer. This demo uses sample photos, and nothing you do in it is saved.', made: 'October 2026', with: 'AI pair programming', where: 'Computer' },
+  { no: '003', name: "Dodo's Day", icon: 'dodo', types: ['Game'], tab: 'fun', short: 'A short and sweet RPG inspired by classic handheld adventures.', img: 'dodo.png', pos: 'center', url: 'https://lulu-sun.github.io/test',
+    desc: 'A little adventure built in Unity with mini-games and a story to follow. Walk around, talk to everyone and help Dodo through the day.', made: 'June 2022', with: 'Unity and C#', where: 'Computer with a keyboard' },
+  { no: '004', name: 'Lilock', icon: 'lilock', types: ['Tool'], tab: 'tools', short: 'A simple Android notes app with a focus on privacy and security.', img: '', url: 'https://github.com/lulu-sun/lilock',
+    desc: 'A simple Android notes app with a focus on privacy and security.', made: 'April 2025', with: 'Android Studio, Kotlin and SQLite', where: 'Android phone' },
+  { no: '005', name: 'gitCraft', icon: 'yarn', types: ['Creative'], tab: 'fun', short: 'A forum for crafters of all kinds to share their knowledge.', img: 'gitcraft.png', pos: 'center top', url: 'https://github.com/cwru-courses/gitCraft',
+    desc: 'A forum for crafters of all kinds to share their knowledge. Our team of five built it in a software engineering course with the MEAN stack, practising Agile development, CI/CD and automated testing.', made: 'August 2024', with: 'MongoDB, Express, Angular and Node.js', where: 'Computer' }
+];
+const TOTAL = entries.length;
+const grid = document.getElementById('grid'), entry = document.getElementById('entry');
+let current = 0;
+function show(i) {
+  current = i; const e = entries[i];
+  [...grid.children].forEach((s, j) => s.classList.toggle('on', j === i));
+  entry.innerHTML = '';
+  const top = document.createElement('div'); top.className = 'entry-top';
+  const badge = document.createElement('div'); badge.className = 'badge'; badge.append(sprite(e.icon, 4));
+  const info = document.createElement('div');
+  info.innerHTML = `<div class="entry-no">No. ${e.no}</div><a class="name" href="${e.url}" target="_blank" rel="noopener">${e.name} <span class="go">OPEN ▶</span></a><div class="types">${e.types.map(t => `<span class="type" style="background:${TYPES[t]}">${t.toUpperCase()}</span>`).join('')}</div>`;
+  top.append(badge, info);
+  entry.append(top);
+  setTimeout(() => { const n = entry.querySelector('.shot.noimg'); if (n) n.append(sprite(e.icon, 9)); });
+  entry.insertAdjacentHTML('beforeend', `<div class="entry-split"><a class="shot${e.img ? '' : ' noimg'}" href="${e.url}" target="_blank" rel="noopener">${e.img ? `<img src="${e.img}" alt="${e.name}" style="object-position:${e.pos || 'center'};object-fit:${e.fit || 'cover'}">` : ''}</a><div class="note"><dl class="stats"><dt>MADE</dt><dd>${e.made}</dd><dt>BUILT WITH</dt><dd>${e.with}</dd><dt>BEST ON</dt><dd>${e.where}</dd></dl></div></div><div class="dialog" style="margin-top:16px"><div class="dn">"${e.name.toUpperCase()}"</div><p>${e.desc}</p></div><span class="pnum">PAGE 2</span>`);
+}
+for (let i = 0; i < TOTAL; i++) {
+  const s = document.createElement('div'); const e = entries[i];
+  s.className = 'slot' + (e ? '' : ' empty');
+  s.innerHTML = `<span class="no">${String(i + 1).padStart(3, '0')}</span>`;
+  if (e) {
+    s.append(sprite(e.icon, 4));
+    s.insertAdjacentHTML('beforeend', `<div class="tip"><b>${e.name}</b>${e.short}</div>`);
+    s.onclick = () => show(i);
+  } else { const l = sprite('lock', 3); l.className = 'lockslot'; s.append(l); }
+  grid.append(s);
+}
+document.getElementById('found').textContent = `${entries.length} ENTRIES`;
+const tabs = document.getElementById('tabs');
+[['star', 'ALL'], ['tool', 'TOOLS'], ['book', 'FUN']].forEach(([ic, label], k) => {
+  const b = document.createElement('button'); if (k === 0) b.className = 'on';
+  b.append(sprite(ic, 2)); b.append(label); tabs.append(b);
+  b.onclick = () => filter(label.toLowerCase());
+});
+function filter(t) {
+  [...tabs.children].forEach(b => b.classList.toggle('on', b.textContent.toLowerCase() === t));
+  const shown = entries.map((e, i) => t === 'all' || e.tab === t ? i : -1).filter(i => i >= 0);
+  [...grid.children].forEach((s, i) => s.classList.toggle('off', t !== 'all' && !shown.includes(i)));
+  document.getElementById('found').textContent = t === 'all' ? `${entries.length} ENTRIES` : (t === 'tools' ? `${shown.length} TOOL${shown.length === 1 ? '' : 'S'}` : `${shown.length} FUN THING${shown.length === 1 ? '' : 'S'}`);
+  if (shown.length && !shown.includes(current)) show(shown[0]);
+}
+const q = new URLSearchParams(location.search);
+show(Number(q.get('e') || 0));
+if (q.has('tab')) filter(q.get('tab'));
+if (q.has('hover')) grid.children[Number(q.get('hover'))].classList.add('force');
+</script>
+</body>
+</html>
